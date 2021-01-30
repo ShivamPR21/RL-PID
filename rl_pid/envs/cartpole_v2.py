@@ -95,7 +95,7 @@ class CartPoleEnvV2(gym.Env):
         self.tau = 0.02  # seconds between state updates
         self.kinematics_integrator = 'euler'
         self.min_action = np.float32([0.001, 0.001, 0.001])
-        self.max_action = np.float32([10, 10, 10])
+        self.max_action = np.float32([10.0, 10.0, 10.0])
         self.force = 0
 
         # Angle at which to fail the episode
@@ -106,7 +106,9 @@ class CartPoleEnvV2(gym.Env):
         # is still within bounds.
         high = np.array([self.x_threshold * 2,
                          np.finfo(np.float32).max,
+                         np.finfo(np.float32).max,
                          self.theta_threshold_radians * 2,
+                         np.finfo(np.float32).max,
                          np.finfo(np.float32).max],
                         dtype=np.float32)
 
@@ -128,6 +130,9 @@ class CartPoleEnvV2(gym.Env):
         reward = 0.25 * (np.exp(-(self.state[0]) ** 2 / 2) + np.exp(-(self.state[2]) ** 2 / 2)) + 0.75 * rmv
         return reward
 
+    def controller(self):
+        return None
+
     def step(self, action):
         err_msg = "%r (%s) invalid" % (action, type(action))
         assert self.action_space.contains(action), err_msg
@@ -135,10 +140,10 @@ class CartPoleEnvV2(gym.Env):
         x, x_dot, x_acc, theta, theta_dot, theta_acc = self.state
 
         loc_delta = self.sv_theta - theta
-        loc_delta_dot = (loc_delta - self.delta)/self.tau
-        loc_delta_dot_dot = (loc_delta_dot - self.delta_dot)/self.tau**2
+        loc_delta_dot = (loc_delta - self.delta) / self.tau
+        loc_delta_dot_dot = (loc_delta_dot - self.delta_dot) / self.tau ** 2
 
-        self.force += action[0]*loc_delta_dot + action[1]*loc_delta + action[2]*loc_delta_dot_dot
+        self.force += (action[0] * loc_delta_dot + action[1] * loc_delta + action[2] * loc_delta_dot_dot) * self.tau
 
         self.delta = loc_delta
         self.delta_dot = loc_delta_dot
@@ -153,7 +158,7 @@ class CartPoleEnvV2(gym.Env):
         temp = (self.force + self.polemass_length * theta_dot ** 2 * sintheta) / self.total_mass
 
         thetaacc = (self.gravity * sintheta - costheta * temp) / (
-                    self.length * (4.0 / 3.0 - self.masspole * costheta ** 2 / self.total_mass))
+                self.length * (4.0 / 3.0 - self.masspole * costheta ** 2 / self.total_mass))
         thetaacc = ((self.np_random.rand() * 2 - 1) / 10 + 1.0) * thetaacc
 
         xacc = temp - self.polemass_length * thetaacc * costheta / self.total_mass

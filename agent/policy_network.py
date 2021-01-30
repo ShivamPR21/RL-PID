@@ -30,19 +30,19 @@ class PolicyNetV1(ActorCriticPolicy):
         super(PolicyNetV1, self).__init__(sess, ob_space, ac_space, n_env, n_steps, n_batch, reuse=reuse, scale=True)
 
         with tf.variable_scope("model", reuse=reuse):
-            activ = tf.nn.relu
+            activ = tf.keras.activations.relu
 
-            extracted_features = tf.layers.Dense(self.processed_obs, 62, name="features")
+            extracted_features = tf.compat.v1.layers.dense(self.processed_obs, 62, name="features")
 
             pi_h = extracted_features
             for i, layer_size in enumerate([128, 128, 128]):
-                pi_h = activ(tf.layers.dense(pi_h, layer_size, name='pi_fc' + str(i)))
+                pi_h = activ(tf.compat.v1.layers.dense(pi_h, layer_size, name='pi_fc' + str(i)))
             pi_latent = pi_h
 
             vf_h = extracted_features
             for i, layer_size in enumerate([32, 32]):
-                vf_h = activ(tf.layers.dense(vf_h, layer_size, name='vf_fc' + str(i)))
-            value_fn = tf.layers.dense(vf_h, 1, name='vf')
+                vf_h = activ(tf.compat.v1.layers.dense(vf_h, layer_size, name='vf_fc' + str(i)))
+            value_fn = tf.compat.v1.layers.dense(vf_h, 1, name='vf')
             vf_latent = vf_h
 
             self._proba_distribution, self._policy, self.q_value = \
