@@ -32,15 +32,15 @@ class PolicyNetV1(ActorCriticPolicy):
         with tf.variable_scope("model", reuse=reuse):
             activ = tf.keras.activations.relu
 
-            extracted_features = tf.compat.v1.layers.dense(self.processed_obs, 62, name="features")
+            extracted_features = tf.compat.v1.layers.dense(self.processed_obs, 10, name="features")
 
             pi_h = extracted_features
-            for i, layer_size in enumerate([128, 128, 128]):
+            for i, layer_size in enumerate([20, 20, 20]):
                 pi_h = activ(tf.compat.v1.layers.dense(pi_h, layer_size, name='pi_fc' + str(i)))
             pi_latent = pi_h
 
             vf_h = extracted_features
-            for i, layer_size in enumerate([32, 32]):
+            for i, layer_size in enumerate([20, 20]):
                 vf_h = activ(tf.compat.v1.layers.dense(vf_h, layer_size, name='vf_fc' + str(i)))
             value_fn = tf.compat.v1.layers.dense(vf_h, 1, name='vf')
             vf_latent = vf_h

@@ -16,6 +16,8 @@
 from gym.envs.registration import register
 
 register(
-    id='cartpole-v2',
+    id='CartPole-v2',
     entry_point='rl_pid:envs:CartPoleEnvV2',
+    max_episode_steps=500,
+    reward_threshold=475.0,
 )

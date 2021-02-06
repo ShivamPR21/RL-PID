@@ -99,17 +99,17 @@ class CartPoleEnvV2(gym.Env):
         self.force = 0
 
         # Angle at which to fail the episode
-        self.theta_threshold_radians = 12 * 2 * math.pi / 360
+        self.theta_threshold_radians = 15 * 2 * math.pi / 360
         self.x_threshold = 2.4
 
         # Angle limit set to 2 * theta_threshold_radians so failing observation
         # is still within bounds.
         high = np.array([self.x_threshold * 2,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max,
+                         10.0,
+                         10.0,
                          self.theta_threshold_radians * 2,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max],
+                         5.0,
+                         5.0],
                         dtype=np.float32)
 
         self.action_space = spaces.Box(low=self.min_action, high=self.max_action)
@@ -175,12 +175,12 @@ class CartPoleEnvV2(gym.Env):
             theta_dot = theta_dot + self.tau * thetaacc
             theta = theta + self.tau * theta_dot
 
-        self.state = (x * ((self.np_random.rand() * 2 - 1) / 100 + 1.0),
-                      x_dot * ((self.np_random.rand() * 2 - 1) / 100 + 1.0),
-                      xacc * ((self.np_random.rand() * 2 - 1) / 100 + 1.0),
-                      theta * ((self.np_random.rand() * 2 - 1) / 100 + 1.0),
-                      theta_dot * ((self.np_random.rand() * 2 - 1) / 100 + 1.0),
-                      thetaacc * ((self.np_random.rand() * 2 - 1) / 100 + 1.0))
+        self.state = (x * ((self.np_random.rand() * 2 - 1) / 10000 + 1.0),
+                      x_dot * ((self.np_random.rand() * 2 - 1) / 10000 + 1.0),
+                      xacc * ((self.np_random.rand() * 2 - 1) / 10000 + 1.0),
+                      theta * ((self.np_random.rand() * 2 - 1) / 10000 + 1.0),
+                      theta_dot * ((self.np_random.rand() * 2 - 1) / 10000 + 1.0),
+                      thetaacc * ((self.np_random.rand() * 2 - 1) / 10000 + 1.0))
 
         done = bool(
             x < -self.x_threshold
